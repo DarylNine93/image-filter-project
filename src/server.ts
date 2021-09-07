@@ -25,20 +25,21 @@ import { filterImageFromURL, deleteLocalFiles } from './util/util';
         if (!image_url) {
             return res.status(400).send("Bad Request")
         }
-        
-            // Filtering the image and returning the filtered image path
-            filterImageFromURL(image_url).then((data) => {
-                const filtered_image_url = data
-                // Creating an array with the filtered image path for delete purpose
-                let local_files = [filtered_image_url]
-                // Sending filtered image to response
-                res.status(200).sendFile(filtered_image_url)
-                //deleting the filtered image from server
+        // Filtering the image and returning the filtered image path
+        filterImageFromURL(image_url).then((data) => {
+            const filtered_image_url = data
+            // Creating an array with the filtered image path for delete purpose
+            let local_files = [filtered_image_url]
+            // Sending filtered image to response
+            res.status(200).sendFile(filtered_image_url)
+            //deleting the filtered image from server when finish
+            res.on('finish', () => {
                 deleteLocalFiles(local_files)
-            }
-                , (error) => {
-                    console.log("Something went wrong when filtering")
-                })
+            })
+        }
+            , (error) => {
+                console.log("Something went wrong when filtering")
+            })
 
 
     });
